@@ -1,13 +1,13 @@
+mod constants;
 mod main_state;
-use main_state::MainState;
-
 mod utils;
+
+use constants::*;
+use main_state::MainState;
 use utils::Cmd;
 
-mod constants;
-use constants::*;
-
 use macroquad::prelude::*;
+use std::{thread, time};
 
 #[macroquad::main(window_conf)]
 async fn main() {
@@ -15,13 +15,13 @@ async fn main() {
     let mut minman = MouseInputManager::new();
 
     loop {
-        //let dt = get_frame_time();
         clear_background(BLACK);
-        state.exe_cmd(minman.reaction_on_press(MouseButton::Left));
-        state.exe_cmd(minman.reaction_on_press(MouseButton::Right));
+        state.exe_cmd(minman.reaction_on_press());
 
         state.draw();
 
+        let dt = get_frame_time() as u64;
+        thread::sleep(time::Duration::from_millis(MAX_DT - dt));
         next_frame().await
     }
 }
@@ -36,48 +36,63 @@ fn window_conf() -> Conf {
 }
 
 pub struct MouseInputManager {
-    drag_start: Vec2,
+    drag_start: Option<Vec2>,
     dragging: bool,
+    deleting: bool,
 }
 
 impl MouseInputManager {
     fn new() -> Self {
         Self {
-            drag_start: Vec2::ZERO,
+            drag_start: None,
             dragging: false,
+            deleting: false,
         }
     }
 
-    fn reaction_on_press(&mut self, btn: MouseButton) -> Cmd {
+    fn reaction_on_press(&mut self) -> Cmd {
         let pos = Vec2::from(mouse_position());
 
-        match btn {
-            MouseButton::Left => {
-                if is_mouse_button_pressed(btn) {
-                    self.drag_start = pos;
-                    Cmd::None
-                } else if is_mouse_button_down(btn) {
-                    if self.dragging {
-                        Cmd::Drag { pos }
-                    } else if (self.drag_start - pos).length() > DRAG_MIN_OFFSET {
-                        self.dragging = true;
-                        Cmd::InitDrag { pos }
-                    } else {
-                        Cmd::None
+        if is_mouse_button_pressed(MouseButton::Left) {
+            if is_key_down(KeyCode::LeftControl) || is_key_down(KeyCode::RightControl) {
+                self.deleting = true;
+                Cmd::Del { pos }
+            } else {
+                self.drag_start = Some(pos);
+                Cmd::None
+            }
+        } else if is_mouse_button_down(MouseButton::Left) {
+            if self.dragging {
+                Cmd::Drag { pos }
+            } else {
+                match self.drag_start {
+                    Some(drag_startp) => {
+                        println!("distance: {}", drag_startp.distance(pos));
+                        if drag_startp.distance(pos) > DRAG_MIN_OFFSET {
+                            self.dragging = true;
+                            Cmd::InitDrag { pos }
+                        } else {
+                            Cmd::None
+                        }
                     }
-                } else if is_mouse_button_released(btn) {
-                    if self.dragging {
-                        self.dragging = false;
-                        Cmd::None
-                    } else {
-                        Cmd::Add { pos }
-                    }
-                } else {
-                    Cmd::None
+                    None => Cmd::None,
                 }
             }
-            MouseButton::Right => Cmd::Del { pos },
-            _ => Cmd::None,
+        } else if is_mouse_button_released(MouseButton::Left) {
+            if self.deleting {
+                self.deleting = false;
+                Cmd::None
+            } else if self.dragging {
+                self.dragging = false;
+                self.drag_start = None;
+                Cmd::None
+            } else {
+                Cmd::Add { pos }
+            }
+        } else if is_mouse_button_pressed(MouseButton::Right) {
+            Cmd::Finish
+        } else {
+            Cmd::None
         }
     }
 }

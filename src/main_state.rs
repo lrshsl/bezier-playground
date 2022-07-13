@@ -1,14 +1,14 @@
 use crate::{
     constants::*,
     draw_circle, draw_circle_lines,
-    utils::{inform_user, Cmd},
+    utils::{inform_user, Cmd, Node},
     Vec2,
 };
 
 pub struct MainState {
     bezier_curves: Vec<QuadraticBezierCurve>,
     points: Vec<Vec2>,
-    dragging_target: Option<Vec2>,
+    dragging_target: Option<Node>,
 }
 
 impl MainState {
@@ -22,23 +22,56 @@ impl MainState {
 
     pub fn exe_cmd(&mut self, cmd: Cmd) {
         match cmd {
-            Cmd::Add { pos } => {
-                self.points.push(pos);
-                if self.points.len() == 3 {
-                    self.new_bezier_curve();
-                }
-            }
+            Cmd::Add { pos } => self.points.push(pos),
             Cmd::InitDrag { pos } => {
-                self.dragging_target = match self.get_closest_point(pos) {
-                    Some(p) => Some(*p),
-                    None => None,
+                println!("initializing..");
+                self.dragging_target = self.get_closest_node(&pos).and_then(|p| {
+                    let distance = (*self.get_point_from_node(&p)).distance(pos);
+                    if distance < DRAG_MAX_OFFSET {
+                        println!("drag target initalized");
+                        Some(p)
+                    } else {
+                        println!("too far: {}", distance);
+                        None
+                    }
+                })
+            }
+            /*
+                       Cmd::InitDrag { pos } => {
+                           self.dragging_target = match self.get_closest_point(&pos) {
+                               Some(p) => {
+                                   println!("found {}", *p);
+                                   println!("distance: {}", (*p - pos).length());
+                                   if (*p - pos).length() < CIRCLE_RADIUS + DRAG_MAX_OFFSET {
+                                       println!("initialized node");
+                                       Some(
+                                       )
+                                   } else {
+                                       None
+                                   }
+                               }
+                               None => None,
+                           }
+                       }
+            */
+            Cmd::Drag { pos } => match &self.dragging_target {
+                Some(node) => {
+                    let node = (*node).clone();
+                    *self.get_point_from_node(&node) = pos
+                }
+                None => {}
+            },
+            Cmd::Del { pos } => {
+                match self.get_closest_point(&pos) {
+                    Some(_) => {
+                        self.points.retain(|&x| (pos - x).length() > CIRCLE_RADIUS)
+                        // TODO: only working for free points
+                    }
+                    None => {}
                 }
             }
-            Cmd::Drag { pos } => match self.get_closest_point(pos) {
-                Some(p) => *p = pos,
-                None => inform_user("No points to move"),
-            },
-            _ => {}
+            Cmd::Finish => self.new_bezier_curve(),
+            Cmd::None => {}
         }
     }
 
@@ -47,12 +80,12 @@ impl MainState {
             .push(QuadraticBezierCurve::from(&mut self.points));
     }
 
-    fn get_closest_point(&mut self, pos: Vec2) -> Option<&mut Vec2> {
+    fn get_closest_point(&mut self, pos: &Vec2) -> Option<&mut Vec2> {
         let mut cur_min: f32 = f32::MAX;
         let mut tmp_closest: Option<&mut Vec2> = None;
         for curve in self.bezier_curves.iter_mut() {
             for p in curve.points.iter_mut() {
-                let d = p.distance(pos);
+                let d = p.distance(*pos);
                 if d < cur_min {
                     cur_min = d;
                     tmp_closest = Some(p);
@@ -60,13 +93,44 @@ impl MainState {
             }
         }
         for p in self.points.iter_mut() {
-            let d = p.distance(pos);
+            let d = p.distance(*pos);
             if d < cur_min {
                 cur_min = d;
                 tmp_closest = Some(p);
             }
         }
         tmp_closest
+    }
+
+    fn get_point_from_node(&mut self, node: &Node) -> &mut Vec2 {
+        match node {
+            Node::Free { index } => &mut self.points[*index as usize],
+            Node::InBezierCurve { curve, index } => {
+                &mut self.bezier_curves[*curve as usize].points[*index as usize]
+            }
+        }
+    }
+
+    fn get_closest_node(&mut self, pos: &Vec2) -> Option<Node> {
+        let mut cur_min = f32::MAX;
+        let mut tmp_result = None;
+        for (curve_i, curve) in self.bezier_curves.iter().enumerate() {
+            for (point_i, p) in curve.points.iter().enumerate() {
+                let d = p.distance(*pos);
+                if d < cur_min {
+                    cur_min = d;
+                    tmp_result = Some(Node::from((curve_i, point_i)));
+                }
+            }
+        }
+        for (point_i, p) in self.points.iter().enumerate() {
+            let d = p.distance(*pos);
+            if d < cur_min {
+                cur_min = d;
+                tmp_result = Some(Node::from(point_i));
+            }
+        }
+        tmp_result
     }
 
     pub fn draw(&self) {
