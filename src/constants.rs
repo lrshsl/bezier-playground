@@ -14,9 +14,9 @@ pub const DRAG_MAX_OFFSET: f32 = CIRCLE_RADIUS * 6.;
 pub const INFO_TEXT_X: f32 = (1f64 / 10f64) as f32;
 pub const INFO_TEXT_Y: f32 = (1f64 / 12f64) as f32;
 
-pub const BTN_DRAW_X: f32 = (18f64 / 20f64) as f32;
-pub const BTN_DRAW_Y: f32 = (18f64 / 20f64) as f32;
-pub const BTN_DRAW_W: f32 = (2f64 / 20f64) as f32;
-pub const BTN_DRAW_H: f32 = (2f64 / 20f64) as f32;
-pub const BTN_DRAW_POS: Vec2 = const_vec2!([BTN_DRAW_X, BTN_DRAW_Y]);
-pub const BTN_DRAW_SIZE: Vec2 = const_vec2!([BTN_DRAW_W, BTN_DRAW_H]);
+const BTN_X: f32 = (18f64 / 20f64) as f32;
+const BTN_Y: f32 = (18f64 / 20f64) as f32;
+const BTN_WIDTH: f32 = (2f64 / 20f64) as f32;
+const BTN_HEIGHT: f32 = (2f64 / 20f64) as f32;
+pub const BTN_DRAW_POS: Vec2 = const_vec2!([BTN_X, BTN_Y]);
+pub const BTN_DRAW_SIZE: Vec2 = const_vec2!([BTN_WIDTH, BTN_HEIGHT]);
