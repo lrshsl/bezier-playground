@@ -132,6 +132,19 @@ impl MainState {
                 self.draw_point(p);
 
                 for curve in self.bezier_curves.iter() {
+                    for p in 1..(PREC + 1) {
+                        let t = p as f32 / PREC as f32;
+                        let point = (1. - t) * (1. -t) * curve.points[0] + 2. * (t - t*t) * curve.points[1] + t * t * curve.points[2];
+                        draw_circle(
+                            point.x,
+                            point.y,
+                            LINE_THICKNESS,
+                            LINE_COLOR,
+                        );
+                    }
+                }
+                /*
+                for curve in self.bezier_curves.iter() {
                     for percent in 1..(PREC + 1) {
                         let t = percent as f32 / PREC as f32;
                         let f0 = (1. - t) * (1. - t);
@@ -143,6 +156,7 @@ impl MainState {
                         draw_circle(x, y, LINE_THICKNESS, LINE_COLOR)
                     }
                 }
+                 */
             }
         }
     }

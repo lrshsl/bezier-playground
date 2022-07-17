@@ -6,7 +6,11 @@ use constants::*;
 use main_state::MainState;
 use utils::Cmd;
 
-use macroquad::prelude::*;
+use macroquad::{
+    hash,
+    prelude::*,
+    ui::{root_ui, widgets::Button},
+};
 //use std::{thread, time};
 
 #[macroquad::main(window_conf)]
@@ -19,6 +23,10 @@ async fn main() {
         state.exe_cmd(minman.reaction_on_press());
 
         state.draw();
+
+        root_ui().window(hash!(), BTN_DRAW_POS, BTN_DRAW_SIZE, |ui| {
+            Button::new("Draw").position(BTN_DRAW_POS).ui(ui);
+        });
 
         if get_fps() < 55 {
             println!("fps: {}", get_fps());

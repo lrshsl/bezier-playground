@@ -1,4 +1,7 @@
-use crate::{draw_text, Vec2, DARKGRAY};
+use crate::{
+    constants::{INFO_TEXT_X, INFO_TEXT_Y},
+    draw_text, Vec2, DARKGRAY,
+};
 
 #[derive(Debug)]
 pub enum Cmd {
@@ -11,7 +14,7 @@ pub enum Cmd {
 }
 
 pub fn inform_user(msg: &'static str) {
-    draw_text(msg, 20.0, 20.0, 20.0, DARKGRAY);
+    draw_text(msg, INFO_TEXT_X, INFO_TEXT_Y, 20.0, DARKGRAY);
 }
 
 #[derive(Clone)]
