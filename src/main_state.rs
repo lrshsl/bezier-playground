@@ -22,7 +22,12 @@ impl MainState {
 
     pub fn exe_cmd(&mut self, cmd: Cmd) {
         match cmd {
-            Cmd::Add { pos } => self.points.push(pos),
+            Cmd::Add { pos } => {
+                self.points.push(pos);
+                if self.points.len() == 3 {
+                    self.new_bezier_curve();
+                }
+            }
             Cmd::InitDrag { pos } => {
                 self.dragging_target = self.get_closest_node(&pos).and_then(|p| {
                     let distance = (*self.get_point_from_node(&p)).distance(pos);
@@ -49,7 +54,13 @@ impl MainState {
                     None => {}
                 }
             }
-            Cmd::Finish => self.new_bezier_curve(),
+            Cmd::Finish => {
+                if self.points.len() == 3 {
+                    self.new_bezier_curve();
+                } else {
+                    inform_user("Not enough points");
+                }
+            }
             Cmd::None => {}
         }
     }

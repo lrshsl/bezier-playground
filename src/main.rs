@@ -7,7 +7,7 @@ use main_state::MainState;
 use utils::Cmd;
 
 use macroquad::prelude::*;
-use std::{thread, time};
+//use std::{thread, time};
 
 #[macroquad::main(window_conf)]
 async fn main() {
@@ -20,8 +20,9 @@ async fn main() {
 
         state.draw();
 
-        let dt = get_frame_time() as u64;
-        thread::sleep(time::Duration::from_millis(MAX_DT - dt));
+        if get_fps() < 55 {
+            println!("fps: {}", get_fps());
+        }
         next_frame().await
     }
 }
