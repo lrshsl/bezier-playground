@@ -1,36 +1,55 @@
 mod constants;
 mod main_state;
+mod settings;
+//mod skin;
 mod utils;
 
 use constants::*;
 use main_state::MainState;
+use settings::BezierSettings;
 use utils::Cmd;
 
 use macroquad::{
-    hash,
     prelude::*,
-    ui::{root_ui, widgets::Button},
+    ui::{root_ui, widgets::Window}, hash,
 };
-//use std::{thread, time};
+// CodeBlooded
 
 #[macroquad::main(window_conf)]
 async fn main() {
-    let mut state = MainState::new();
+    let mut state = MainState::new(
+        BezierSettings::default()
+    );
     let mut minman = MouseInputManager::new();
+    
+ //   root_ui().push_skin(&skin);
 
     loop {
+        // Reference for Size
+        let sref = screen_width().min(screen_height());
         clear_background(BLACK);
+
+        // Events
         state.exe_cmd(minman.reaction_on_press());
 
+        // Draw Bezier Curves
         state.draw();
 
-        root_ui().window(hash!(), BTN_DRAW_POS, BTN_DRAW_SIZE, |ui| {
-            Button::new("Draw").position(BTN_DRAW_POS).ui(ui);
-        });
+        // Draw Ui
+        Window::new( hash!(), REL_WIN_CONF_POS * sref, REL_WIN_CONF_SIZE * sref)
+            .label("Quick Settings")
+            .ui(&mut root_ui(), |ui| {
+                ui.tree_node(hash!(), "General", |ui| {
+                    ui.checkbox(hash!(), "Show Circles", &mut state.settings.show_circles);
+                    ui.slider(hash!(), "Precision", state.settings.prec_range.clone(), &mut state.settings.precision)
+                });
+            });
 
+/*
         if get_fps() < 55 {
             println!("fps: {}", get_fps());
         }
+*/
         next_frame().await
     }
 }
@@ -78,6 +97,7 @@ impl MouseInputManager {
                     Some(drag_startp) => {
                         if drag_startp.distance(pos) > DRAG_MIN_OFFSET {
                             self.dragging = true;
+                            self.drag_start = None;
                             Cmd::InitDrag { pos }
                         } else {
                             Cmd::None
@@ -92,7 +112,6 @@ impl MouseInputManager {
                 Cmd::None
             } else if self.dragging {
                 self.dragging = false;
-                self.drag_start = None;
                 Cmd::None
             } else {
                 Cmd::Add { pos }

@@ -2,18 +2,20 @@ use crate::{
     constants::*,
     draw_circle, draw_circle_lines,
     utils::{inform_user, Cmd, Node},
-    Vec2,
+    Vec2, settings::BezierSettings,
 };
 
 pub struct MainState {
+    pub settings: BezierSettings,
     bezier_curves: Vec<QuadraticBezierCurve>,
     points: Vec<Vec2>,
     dragging_target: Option<Node>,
 }
 
 impl MainState {
-    pub fn new() -> Self {
+    pub fn new(settings: BezierSettings) -> Self {
         Self {
+            settings,
             bezier_curves: Vec::new(),
             points: Vec::new(),
             dragging_target: None,
@@ -124,29 +126,32 @@ impl MainState {
     }
 
     pub fn draw(&self) {
-        for p in self.points.iter() {
-            self.draw_point(p);
-        }
-        for bez_curve in self.bezier_curves.iter() {
-            for p in bez_curve.points.iter() {
+        // Circles
+        if self.settings.show_circles {
+            for p in self.points.iter() {
                 self.draw_point(p);
-
-                for curve in self.bezier_curves.iter() {
-                    for p in 1..(PREC + 1) {
-                        let t = p as f32 / PREC as f32;
-                        let point = (1. - t) * (1. -t) * curve.points[0] + 2. * (t - t*t) * curve.points[1] + t * t * curve.points[2];
-                        draw_circle(
-                            point.x,
-                            point.y,
-                            LINE_THICKNESS,
-                            LINE_COLOR,
-                        );
-                    }
+            }
+        }
+        // Curves
+        for curve in self.bezier_curves.iter() {
+            for p in curve.points.iter() {
+                if self.settings.show_circles {
+                    self.draw_point(p);
+                }
+                for percent in 1..(self.settings.precision as u16) {
+                    let t = f32::from(percent) / f32::from(self.settings.precision);
+                    let point = (1. - t) * (1. -t) * curve.points[0] + 2. * (t - t*t) * curve.points[1] + t * t * curve.points[2];
+                    draw_circle(
+                        point.x,
+                        point.y,
+                        LINE_THICKNESS,
+                        LINE_COLOR,
+                    );
                 }
                 /*
                 for curve in self.bezier_curves.iter() {
-                    for percent in 1..(PREC + 1) {
-                        let t = percent as f32 / PREC as f32;
+                    for percent in 1..(self.settings.precision + 1) {
+                        let t = percent as f32 / self.settings.precision as f32;
                         let f0 = (1. - t) * (1. - t);
                         let f1 = (1. - t) * t;
                         let f2 = t * t;
