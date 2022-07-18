@@ -3,7 +3,7 @@ use crate::{
     draw_text, Vec2, DARKGRAY,
 };
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub enum Cmd {
     Add { pos: Vec2 },
     Del { pos: Vec2 },

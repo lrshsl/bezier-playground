@@ -10,8 +10,8 @@ pub const LINE_COLOR: Color = WHITE;
 pub const DRAG_MIN_OFFSET: f32 = 1.;
 pub const DRAG_MAX_OFFSET: f32 = CIRCLE_RADIUS * 6.;
 
-pub const INFO_TEXT_X: f32 = (1f64 / 10f64) as f32;
-pub const INFO_TEXT_Y: f32 = (1f64 / 12f64) as f32;
+pub const INFO_TEXT_X: f32 = (1f64 / 2f64) as f32;
+pub const INFO_TEXT_Y: f32 = (1f64 / 2f64) as f32;
 
 pub const REL_WIN_CONF_POS: Vec2 = const_vec2!([1./10., 1./10.]);
 pub const REL_WIN_CONF_SIZE: Vec2 = const_vec2!([4./10., 5./10.]);

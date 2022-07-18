@@ -11,7 +11,7 @@ use utils::Cmd;
 
 use macroquad::{
     prelude::*,
-    ui::{root_ui, widgets::Window}, hash,
+    ui::{root_ui, widgets::Window, camera_ui}, hash,
 };
 // CodeBlooded
 
@@ -22,6 +22,7 @@ async fn main() {
     );
     let mut minman = MouseInputManager::new();
     
+    let mut need_update = false;
  //   root_ui().push_skin(&skin);
 
     loop {
@@ -30,10 +31,14 @@ async fn main() {
         clear_background(BLACK);
 
         // Events
-        state.exe_cmd(minman.reaction_on_press());
+        let cmd = minman.reaction_on_press();
+        if cmd == Cmd::None {
+            need_update = false;
+        }
+        state.exe_cmd(cmd);
 
         // Draw Bezier Curves
-        state.draw();
+        state.draw(need_update);
 
         // Draw Ui
         Window::new( hash!(), REL_WIN_CONF_POS * sref, REL_WIN_CONF_SIZE * sref)
@@ -44,12 +49,12 @@ async fn main() {
                     ui.slider(hash!(), "Precision", state.settings.prec_range.clone(), &mut state.settings.precision)
                 });
             });
+        root_ui().canvas();
 
-/*
         if get_fps() < 55 {
             println!("fps: {}", get_fps());
         }
-*/
+
         next_frame().await
     }
 }
@@ -79,6 +84,9 @@ impl MouseInputManager {
     }
 
     fn reaction_on_press(&mut self) -> Cmd {
+        if !root_ui().active_window_focused() {
+            return Cmd::None
+        }
         let pos = Vec2::from(mouse_position());
 
         if is_mouse_button_pressed(MouseButton::Left) {
