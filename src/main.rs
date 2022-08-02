@@ -1,11 +1,15 @@
 mod constants;
 mod main_state;
+<<<<<<< HEAD
 mod settings;
 //mod skin;
+=======
+>>>>>>> 1adf21f301f5e92b51ef1661facf86426e971c2e
 mod utils;
 
 use constants::*;
 use main_state::MainState;
+<<<<<<< HEAD
 use settings::BezierSettings;
 use utils::Cmd;
 
@@ -58,6 +62,26 @@ async fn main() {
             println!("fps: {}", get_fps());
         }
 
+=======
+use utils::Cmd;
+
+use macroquad::prelude::*;
+use std::{thread, time};
+
+#[macroquad::main(window_conf)]
+async fn main() {
+    let mut state = MainState::new();
+    let mut minman = MouseInputManager::new();
+
+    loop {
+        clear_background(BLACK);
+        state.exe_cmd(minman.reaction_on_press());
+
+        state.draw();
+
+        let dt = get_frame_time() as u64;
+        thread::sleep(time::Duration::from_millis(MAX_DT - dt));
+>>>>>>> 1adf21f301f5e92b51ef1661facf86426e971c2e
         next_frame().await
     }
 }
@@ -88,6 +112,7 @@ impl MouseInputManager {
 
     fn reaction_on_press(&mut self) -> Cmd {
         let pos = Vec2::from(mouse_position());
+<<<<<<< HEAD
         let sref = screen_width().min(screen_height());
         let window_min = REL_WIN_CONF_POS * sref;
         let window_max = (REL_WIN_CONF_POS + REL_WIN_CONF_SIZE) * sref;
@@ -95,6 +120,8 @@ impl MouseInputManager {
             && pos.y > window_min.y && pos.y < window_max.y {
             return Cmd::None
         }
+=======
+>>>>>>> 1adf21f301f5e92b51ef1661facf86426e971c2e
 
         if is_mouse_button_pressed(MouseButton::Left) {
             if is_key_down(KeyCode::LeftControl) || is_key_down(KeyCode::RightControl) {
@@ -110,9 +137,15 @@ impl MouseInputManager {
             } else {
                 match self.drag_start {
                     Some(drag_startp) => {
+<<<<<<< HEAD
                         if drag_startp.distance(pos) > DRAG_MIN_OFFSET {
                             self.dragging = true;
                             self.drag_start = None;
+=======
+                        println!("distance: {}", drag_startp.distance(pos));
+                        if drag_startp.distance(pos) > DRAG_MIN_OFFSET {
+                            self.dragging = true;
+>>>>>>> 1adf21f301f5e92b51ef1661facf86426e971c2e
                             Cmd::InitDrag { pos }
                         } else {
                             Cmd::None
@@ -127,6 +160,10 @@ impl MouseInputManager {
                 Cmd::None
             } else if self.dragging {
                 self.dragging = false;
+<<<<<<< HEAD
+=======
+                self.drag_start = None;
+>>>>>>> 1adf21f301f5e92b51ef1661facf86426e971c2e
                 Cmd::None
             } else {
                 Cmd::Add { pos }

@@ -1,9 +1,17 @@
 [package]
+<<<<<<< HEAD
 name = "bezierplayground"
+=======
+name = "macroquad"
+>>>>>>> 1adf21f301f5e92b51ef1661facf86426e971c2e
 version = "0.1.0"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+<<<<<<< HEAD
 macroquad = "0.3"
+=======
+macroquad = "0.3.2"
+>>>>>>> 1adf21f301f5e92b51ef1661facf86426e971c2e
