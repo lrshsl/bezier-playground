@@ -2,32 +2,20 @@ use crate::{
     constants::*,
     draw_circle, draw_circle_lines,
     utils::{inform_user, Cmd, Node},
-<<<<<<< HEAD
     Vec2, settings::BezierSettings,
 };
 
 pub struct MainState {
     pub settings: BezierSettings,
-=======
-    Vec2,
-};
-
-pub struct MainState {
->>>>>>> 1adf21f301f5e92b51ef1661facf86426e971c2e
     bezier_curves: Vec<QuadraticBezierCurve>,
     points: Vec<Vec2>,
     dragging_target: Option<Node>,
 }
 
 impl MainState {
-<<<<<<< HEAD
     pub fn new(settings: BezierSettings) -> Self {
         Self {
             settings,
-=======
-    pub fn new() -> Self {
-        Self {
->>>>>>> 1adf21f301f5e92b51ef1661facf86426e971c2e
             bezier_curves: Vec::new(),
             points: Vec::new(),
             dragging_target: None,
@@ -36,7 +24,6 @@ impl MainState {
 
     pub fn exe_cmd(&mut self, cmd: Cmd) {
         match cmd {
-<<<<<<< HEAD
             Cmd::Add { pos } => {
                 self.points.push(pos);
                 if self.points.len() == 3 {
@@ -49,43 +36,10 @@ impl MainState {
                     if distance < DRAG_MAX_OFFSET {
                         Some(p)
                     } else {
-=======
-            Cmd::Add { pos } => self.points.push(pos),
-            Cmd::InitDrag { pos } => {
-                println!("initializing..");
-                self.dragging_target = self.get_closest_node(&pos).and_then(|p| {
-                    let distance = (*self.get_point_from_node(&p)).distance(pos);
-                    if distance < DRAG_MAX_OFFSET {
-                        println!("drag target initalized");
-                        Some(p)
-                    } else {
-                        println!("too far: {}", distance);
->>>>>>> 1adf21f301f5e92b51ef1661facf86426e971c2e
                         None
                     }
                 })
             }
-<<<<<<< HEAD
-=======
-            /*
-                       Cmd::InitDrag { pos } => {
-                           self.dragging_target = match self.get_closest_point(&pos) {
-                               Some(p) => {
-                                   println!("found {}", *p);
-                                   println!("distance: {}", (*p - pos).length());
-                                   if (*p - pos).length() < CIRCLE_RADIUS + DRAG_MAX_OFFSET {
-                                       println!("initialized node");
-                                       Some(
-                                       )
-                                   } else {
-                                       None
-                                   }
-                               }
-                               None => None,
-                           }
-                       }
-            */
->>>>>>> 1adf21f301f5e92b51ef1661facf86426e971c2e
             Cmd::Drag { pos } => match &self.dragging_target {
                 Some(node) => {
                     let node = (*node).clone();
@@ -102,7 +56,6 @@ impl MainState {
                     None => {}
                 }
             }
-<<<<<<< HEAD
             Cmd::Finish => {
                 if self.points.len() == 3 {
                     self.new_bezier_curve();
@@ -110,9 +63,6 @@ impl MainState {
                     inform_user("Not enough points");
                 }
             }
-=======
-            Cmd::Finish => self.new_bezier_curve(),
->>>>>>> 1adf21f301f5e92b51ef1661facf86426e971c2e
             Cmd::None => {}
         }
     }
@@ -161,11 +111,7 @@ impl MainState {
                 let d = p.distance(*pos);
                 if d < cur_min {
                     cur_min = d;
-<<<<<<< HEAD
                     tmp_result = Some(Node::new((curve_i, point_i)));
-=======
-                    tmp_result = Some(Node::from((curve_i, point_i)));
->>>>>>> 1adf21f301f5e92b51ef1661facf86426e971c2e
                 }
             }
         }
@@ -173,18 +119,13 @@ impl MainState {
             let d = p.distance(*pos);
             if d < cur_min {
                 cur_min = d;
-<<<<<<< HEAD
                 tmp_result = Some(Node::new(point_i));
-=======
-                tmp_result = Some(Node::from(point_i));
->>>>>>> 1adf21f301f5e92b51ef1661facf86426e971c2e
             }
         }
         tmp_result
     }
 
     pub fn draw(&self) {
-<<<<<<< HEAD
         // Circles
         if self.settings.show_circles {
             for p in self.points.iter() {
@@ -211,18 +152,6 @@ impl MainState {
                 for curve in self.bezier_curves.iter() {
                     for percent in 1..(self.settings.precision + 1) {
                         let t = percent as f32 / self.settings.precision as f32;
-=======
-        for p in self.points.iter() {
-            self.draw_point(p);
-        }
-        for bez_curve in self.bezier_curves.iter() {
-            for p in bez_curve.points.iter() {
-                self.draw_point(p);
-
-                for curve in self.bezier_curves.iter() {
-                    for percent in 1..(PREC + 1) {
-                        let t = percent as f32 / PREC as f32;
->>>>>>> 1adf21f301f5e92b51ef1661facf86426e971c2e
                         let f0 = (1. - t) * (1. - t);
                         let f1 = (1. - t) * t;
                         let f2 = t * t;
@@ -232,10 +161,7 @@ impl MainState {
                         draw_circle(x, y, LINE_THICKNESS, LINE_COLOR)
                     }
                 }
-<<<<<<< HEAD
                 */
-=======
->>>>>>> 1adf21f301f5e92b51ef1661facf86426e971c2e
             }
         }
     }

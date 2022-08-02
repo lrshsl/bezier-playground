@@ -1,15 +1,9 @@
-<<<<<<< HEAD
 use crate::{
     constants::{INFO_TEXT_X, INFO_TEXT_Y},
     draw_text, Vec2, DARKGRAY,
 };
 
 #[derive(Debug, PartialEq)]
-=======
-use crate::{draw_text, Vec2, DARKGRAY};
-
-#[derive(Debug)]
->>>>>>> 1adf21f301f5e92b51ef1661facf86426e971c2e
 pub enum Cmd {
     Add { pos: Vec2 },
     Del { pos: Vec2 },
@@ -20,11 +14,7 @@ pub enum Cmd {
 }
 
 pub fn inform_user(msg: &'static str) {
-<<<<<<< HEAD
     draw_text(msg, INFO_TEXT_X, INFO_TEXT_Y, 20.0, DARKGRAY);
-=======
-    draw_text(msg, 20.0, 20.0, 20.0, DARKGRAY);
->>>>>>> 1adf21f301f5e92b51ef1661facf86426e971c2e
 }
 
 #[derive(Clone)]
