@@ -125,7 +125,7 @@ impl MainState {
         tmp_result
     }
 
-    pub fn draw(&self, need_update: bool) {
+    pub fn draw(&self) {
         // Circles
         if self.settings.show_circles {
             for p in self.points.iter() {

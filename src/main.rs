@@ -11,7 +11,7 @@ use utils::Cmd;
 
 use macroquad::{
     prelude::*,
-    ui::{root_ui, widgets::Window, camera_ui}, hash,
+    ui::root_ui, hash,
 };
 // CodeBlooded
 
@@ -22,34 +22,37 @@ async fn main() {
     );
     let mut minman = MouseInputManager::new();
     
-    let mut need_update = false;
+    let mut need_update;
  //   root_ui().push_skin(&skin);
 
     loop {
         // Reference for Size
         let sref = screen_width().min(screen_height());
-        clear_background(BLACK);
 
         // Events
         let cmd = minman.reaction_on_press();
+        need_update = true;
         if cmd == Cmd::None {
-            need_update = false;
+            // need_update = false;
         }
         state.exe_cmd(cmd);
 
+
         // Draw Bezier Curves
-        state.draw(need_update);
+        if need_update {
+            clear_background(BLACK);
+            state.draw();
+        }
+
 
         // Draw Ui
-        Window::new( hash!(), REL_WIN_CONF_POS * sref, REL_WIN_CONF_SIZE * sref)
-            .label("Quick Settings")
-            .ui(&mut root_ui(), |ui| {
+        root_ui().window( hash!(), REL_WIN_CONF_POS * sref, REL_WIN_CONF_SIZE * sref, |ui| {
+            ui.label(None, "window");
                 ui.tree_node(hash!(), "General", |ui| {
                     ui.checkbox(hash!(), "Show Circles", &mut state.settings.show_circles);
                     ui.slider(hash!(), "Precision", state.settings.prec_range.clone(), &mut state.settings.precision)
                 });
-            });
-        root_ui().canvas();
+        });
 
         if get_fps() < 55 {
             println!("fps: {}", get_fps());
@@ -84,10 +87,14 @@ impl MouseInputManager {
     }
 
     fn reaction_on_press(&mut self) -> Cmd {
-        if !root_ui().active_window_focused() {
+        let pos = Vec2::from(mouse_position());
+        let sref = screen_width().min(screen_height());
+        let window_min = REL_WIN_CONF_POS * sref;
+        let window_max = (REL_WIN_CONF_POS + REL_WIN_CONF_SIZE) * sref;
+        if pos.x > window_min.x && pos.x < window_max.x
+            && pos.y > window_min.y && pos.y < window_max.y {
             return Cmd::None
         }
-        let pos = Vec2::from(mouse_position());
 
         if is_mouse_button_pressed(MouseButton::Left) {
             if is_key_down(KeyCode::LeftControl) || is_key_down(KeyCode::RightControl) {
