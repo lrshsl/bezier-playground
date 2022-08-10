@@ -1,7 +1,9 @@
 mod constants;
 mod main_state;
+mod bezier_curve;
+mod bezier_backend;
 mod settings;
-//mod skin;
+mod skin;
 mod utils;
 
 use constants::*;
@@ -23,11 +25,12 @@ async fn main() {
     let mut minman = MouseInputManager::new();
     
     let mut need_update;
- //   root_ui().push_skin(&skin);
+    let skin = &skin::SkinManager::get_skin();
+    root_ui().push_skin(&skin);
 
     loop {
         // Reference for Size
-        let sref = screen_width().min(screen_height());
+        let sref = vec2(screen_width(), screen_height());
 
         // Events
         let cmd = minman.reaction_on_press();
@@ -39,15 +42,17 @@ async fn main() {
 
 
         // Draw Bezier Curves
-        if need_update {
-            clear_background(BLACK);
-            state.draw();
+        if !need_update {
+            next_frame().await;
+            continue;
         }
+        // clear_background(BLACK);  // Not neseccary as long as it is BLACK
+        state.draw();
 
 
         // Draw Ui
         root_ui().window( hash!(), REL_WIN_CONF_POS * sref, REL_WIN_CONF_SIZE * sref, |ui| {
-            ui.label(None, "window");
+            ui.label(None, "Quick Settings");
                 ui.tree_node(hash!(), "General", |ui| {
                     ui.checkbox(hash!(), "Show Circles", &mut state.settings.show_circles);
                     ui.slider(hash!(), "Precision", state.settings.prec_range.clone(), &mut state.settings.precision)
@@ -66,7 +71,7 @@ fn window_conf() -> Conf {
     Conf {
         window_title: "BezierPlayground".to_owned(),
         fullscreen: true,
-        high_dpi: true,
+        high_dpi: HIGH_DPI,
         ..Default::default()
     }
 }
