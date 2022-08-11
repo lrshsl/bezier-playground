@@ -5,8 +5,13 @@ pub const HIGH_DPI: bool = true;
 pub const CIRCLE_RADIUS: f32 = 12.;
 pub const CIRCLE_THICKNESS: f32 = 3.;
 pub const CIRCLE_COLOR: Color = color_u8![200, 200, 200, 200];
+
 pub const LINE_THICKNESS: f32 = 1.;
 pub const LINE_COLOR: Color = WHITE;
+
+pub const CONTROL_POLYGON_COLOR: Color = WHITE;
+pub const CONTROL_POLYGON_THICKNESS: f32 = 1.;
+
 pub const DRAG_MIN_OFFSET: f32 = 1.;
 pub const DRAG_MAX_OFFSET: f32 = CIRCLE_RADIUS * 4.;
 
@@ -22,3 +27,12 @@ pub const REL_WIN_CONF_SIZE: Vec2 = const_vec2!([29. / 30., 6. / 30.]);
 pub const BTN_DRAW_COLOR: Color = color_u8!(30, 70, 240, 255);
 pub const BTN_DRAW_COLOR_HOVERED: Color = color_u8!(30, 70, 240, 220);
 pub const BTN_DRAW_COLOR_CLICKED: Color = color_u8!(30, 70, 240, 150);
+
+pub const PASCALS_TRIANGLE: [&[f32]; 6] = [
+    &[1f32],
+    &[1f32, 1f32],
+    &[1f32, 2f32, 1f32],
+    &[1f32, 3f32, 3f32, 1f32],
+    &[1f32, 4f32, 6f32, 4f32, 1f32],
+    &[1f32, 5f32, 10f32, 104f32, 5f32, 1f32],
+];

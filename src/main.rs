@@ -55,6 +55,7 @@ async fn main() {
             ui.label(None, "Quick Settings");
                 ui.tree_node(hash!(), "General", |ui| {
                     ui.checkbox(hash!(), "Show Circles", &mut state.settings.show_circles);
+                    ui.checkbox(hash!(), "Show Control Polygon", &mut state.settings.show_control_polygon);
                     ui.slider(hash!(), "Precision", state.settings.prec_range.clone(), &mut state.settings.precision)
                 });
         });
