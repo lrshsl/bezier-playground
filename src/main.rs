@@ -41,7 +41,7 @@ async fn main() {
         state.exe_cmd(cmd);
 
 
-        // Draw Bezier Curves
+        // Draw Bezier Curves (only if neseccary)
         if !need_update {
             next_frame().await;
             continue;
@@ -52,12 +52,15 @@ async fn main() {
 
         // Draw Ui
         root_ui().window( hash!(), REL_WIN_CONF_POS * sref, REL_WIN_CONF_SIZE * sref, |ui| {
+            if ui.button(None, "Draw") {
+                state.exe_cmd(Cmd::Finish)
+            }
             ui.label(None, "Quick Settings");
-                ui.tree_node(hash!(), "General", |ui| {
-                    ui.checkbox(hash!(), "Show Circles", &mut state.settings.show_circles);
-                    ui.checkbox(hash!(), "Show Control Polygon", &mut state.settings.show_control_polygon);
-                    ui.slider(hash!(), "Precision", state.settings.prec_range.clone(), &mut state.settings.precision)
-                });
+            ui.tree_node(hash!(), "General", |ui| {
+                ui.checkbox(hash!(), "Show Circles", &mut state.settings.show_circles);
+                ui.checkbox(hash!(), "Show Control Polygon", &mut state.settings.show_control_polygon);
+                ui.slider(hash!(), "Precision", state.settings.prec_range.clone(), &mut state.settings.precision)
+            });
         });
 
         // if get_fps() < 55 {

@@ -32,7 +32,7 @@ impl MainState {
 
         if self.settings.show_control_polygon {
             // that's here for readablity
-            // TODO: optimize
+            // TODO/ToNotDo: don't iterate twice through the same
             for curve in self.backend.bezier_curves.iter() {
                 let mut prev = &curve.points[0];
                 for p in curve.points[1..].iter() {
@@ -58,7 +58,6 @@ impl MainState {
                 for percent in 1..(self.settings.precision as u8) {
                     // TODO (as u8)
                     let t = f32::from(percent) / self.settings.precision;
-                    println!("{}", t);
                     let len = curve.points.len() as i32;
 
                     let mut point = curve.points[0];
@@ -68,20 +67,24 @@ impl MainState {
                         point += curve.points[1] * (1. - t) * t * 2.;
                         point += curve.points[2] * t * t;
                     } else {
-                        // I still wrote the first 3 iterations by hand. Guess I don't trust the optimizations &)
+                        // I still wrote the first few iterations by hand. Guess I don't trust the optimizations &)
                         point *= (1. - t).powi(len - 1);
                         point += curve.points[1]
                             * (1. - t).powi(len - 2)
                             * t.powi(1)
-                            * PASCALS_TRIANGLE[len as usize][1];
+                            * PASCALS_TRIANGLE[len as usize - 1][1];
                         point += curve.points[2]
                             * (1. - t).powi(len - 3)
                             * t.powi(2)
-                            * PASCALS_TRIANGLE[len as usize][2];
-                        for ((i, pt), binominal_coeficient) in curve.points[3..]
+                            * PASCALS_TRIANGLE[len as usize - 1][2];
+                        point += curve.points[3]
+                            * (1. - t).powi(len - 4)
+                            * t.powi(3)
+                            * PASCALS_TRIANGLE[len as usize - 1][3];
+                        for ((i, pt), binominal_coeficient) in curve.points[4..]
                             .iter()
                             .enumerate()
-                            .zip(PASCALS_TRIANGLE[len as usize])
+                            .zip(PASCALS_TRIANGLE[len as usize - 1])
                         {
                             // That's for nested 4-loops
                             let i = i as i32 + 2; // P3 -> i = 2
